@@ -12,12 +12,12 @@ import {
   collection,
   addDoc,
   getDocs,
-  updateDoc,
   deleteDoc,
 } from "firebase/firestore";
 
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import NewUserPage from "./NewUserPage";
 
 const Feeds = () => {
   const user = auth.currentUser;
@@ -26,10 +26,13 @@ const Feeds = () => {
   const [time, setTime] = useState("");
   const [name, setName] = useState("");
   const [id, setId] = useState("");
+  const [followers, setFollowers] = useState([]);
   const [summary, setSummary] = useState("");
   const [add, setAdd] = useState(false);
   const [del, setDel] = useState(false);
+  const [showNewUser, setShowNewUser] = useState(false);
   const tweetCollectionRef = collection(db, "tweets");
+  const userCollectionRef = collection(db, "userDetails");
 
   //create C
   const addToDb = async () => {
@@ -47,31 +50,14 @@ const Feeds = () => {
       console.log(err);
     }
   };
-  // update U
-  const updateToDb = async (id) => {
-    const userDoc = doc(db, "feeds", id);
-    await updateDoc(userDoc, {
-      Name: name,
-      Summary: summary,
-    });
-  };
 
+  // delete D
   const deleteFeed = async (id) => {
     const tweetdoc = doc(db, "tweets", id);
     await deleteDoc(tweetdoc);
     setDel(true);
   };
-
-  const searchId = () => {
-    tweets.forEach((tweet) => {
-      if (tweet.UserId === user.uid) return setId(tweet.docId);
-    });
-
-    return id;
-  };
-
-  
-
+  //side bar btns
   const SideBarList = () => {
     return (
       <div className="ui middle aligned selection list">
@@ -110,6 +96,15 @@ const Feeds = () => {
       </div>
     );
   };
+
+  useEffect(() => {
+    const fetchDB = async () => {
+      const data = await getDocs(userCollectionRef);
+
+      setFollowers(data.docs.map((doc) => ({ ...doc.data(), docId: doc.id })));
+    };
+    fetchDB();
+  }, []);
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -172,35 +167,52 @@ const Feeds = () => {
                 placeholder="Search "
               />
             </div>
-            <div className="container bg-black rounded-xl h-96 my-2 ">
-              <h2 className="font-bold font-sans text-white text-xl p-4 ">
-                What's happening
-              </h2>
-              <li className="list-none">
-                <ul>
-                  <img src={logo} className="w-20 h-20 float-right" />
-                    <h4 className="font-sans text-zinc-400 ml-4">Business and stocks</h4>
-                    <p className="text-white ml-4">
-                    Stock market: Here are all the updates of the week
-                    </p>
-                    <p className="text-zinc-600 ml-4">Trending with #marketcrash, #Nifty</p>
-                </ul>
-                <ul className="my-2">
-                  <img src={logo} className="w-20 h-20 float-right" />
-                    <h4 className="font-sans text-zinc-400 ml-4">GalaxyS21FE</h4>
-                    <p className="text-white ml-4">
-                    India is raving about the new Galaxy made for fans. Own at ₹ 49999.
-                    </p>
-                    <p className="text-zinc-600 ml-4">Promoted by Samsung India</p>
-                </ul>
-              </li>
+            <div className="container bg-black rounded-xl my-2 ">
+              <div className="text-slate-200 font-serif mx-4 text-xl my-3 font-extrabold">
+                Who to follow
+              </div>
+              <div className="flex flex-col">
+                {followers.map((toFollow) => {
+                  if (toFollow.UserId !== user.uid) {
+                    return (
+                      <>
+                        <img src={logo} className="w-24" />
+                        <div className="text-md text-slate-500 mx-4">
+                          {toFollow.Name}
+                        </div>
+                        <div className="text-sm text-slate-100 mx-4 lowercase">
+                          @{toFollow.Name}
+                        </div>
+                        <div
+                          className="bg-sky-500 rounded-md p-2 text-slate-300 float-right"
+                          onClick={() => {
+                            setId(toFollow.UserId);
+                            setShowNewUser(true);
+                          }}
+                        >
+                          Follow
+                        </div>
+                      </>
+                    );
+                  }
+                })}
+              </div>
             </div>
           </div>
         </div>
       </div>
       <div className="row">
         <div className="ten wide column">
-          <Tweets tweets={tweets} setDel={setDel} user={user} deleteFeed={deleteFeed}/>
+          {!showNewUser ? (
+            <Tweets
+              tweets={tweets}
+              setDel={setDel}
+              user={user}
+              deleteFeed={deleteFeed}
+            />
+          ) : (
+            <NewUserPage toFollow={followers} thereTweets={tweets} id={id} />
+          )}
         </div>
       </div>
     </div>

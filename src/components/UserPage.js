@@ -127,7 +127,7 @@ const UserPage = () => {
       );
     };
     fetchDB();
-    console.log(user);
+    
   }, []);
 
   return (

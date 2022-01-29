@@ -9,6 +9,9 @@ import Feeds from "./components/Home";
 
 
 const App = () => {
+
+
+  
   return (
     <div>
       <Router>
