@@ -18,6 +18,7 @@ import {
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import NewUserPage from "./NewUserPage";
+import Follow from "./Follow";
 
 const Feeds = () => {
   const user = auth.currentUser;
@@ -168,35 +169,7 @@ const Feeds = () => {
               />
             </div>
             <div className="container bg-black rounded-xl my-2 ">
-              <div className="text-slate-200 font-serif mx-4 text-xl my-3 font-extrabold">
-                Who to follow
-              </div>
-              <div className="flex flex-col">
-                {followers.map((toFollow) => {
-                  if (toFollow.UserId !== user.uid) {
-                    return (
-                      <>
-                        <img src={logo} className="w-24" />
-                        <div className="text-md text-slate-500 mx-4">
-                          {toFollow.Name}
-                        </div>
-                        <div className="text-sm text-slate-100 mx-4 lowercase">
-                          @{toFollow.Name}
-                        </div>
-                        <div
-                          className="bg-sky-500 rounded-md p-2 text-slate-300 float-right"
-                          onClick={() => {
-                            setId(toFollow.UserId);
-                            setShowNewUser(true);
-                          }}
-                        >
-                          Follow
-                        </div>
-                      </>
-                    );
-                  }
-                })}
-              </div>
+              <Follow followers={followers} showNew={setShowNewUser} user={user} Id={setId}/>
             </div>
           </div>
         </div>
