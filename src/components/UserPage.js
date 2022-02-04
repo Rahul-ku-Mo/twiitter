@@ -26,6 +26,7 @@ const UserPage = () => {
   const [id, setId] = useState("");
   const [photo, setPhoto] = useState(logo);
   const [usersLoad, setUsersLoad] = useState(false);
+  const [photoBg,setPhotoBg] = useState("");
 
   //change Password
   const changePassword = async () => {
@@ -73,7 +74,7 @@ const UserPage = () => {
       if (user.uid === profile.UserId) {
         updateProfile(user, {
           displayName: profile.Name,
-          email: profile.Email,
+          photoURL: profile.Photo,
           phone: profile.Phone,
         })
           .then(() => {
@@ -103,6 +104,8 @@ const UserPage = () => {
         Name: name,
         Phone: phone,
         UserId: user.uid,
+        Photo: photo,
+        PhotoBG: photoBg
       });
     } catch (err) {
       console.log(err);
@@ -123,11 +126,18 @@ const UserPage = () => {
       const data = await getDocs(userCollectionRef);
 
       setPersonalData(
-        data.docs.map((doc) => ({ ...doc.data(), docId: doc.id }))
+        data.docs.map((doc) => ({
+          ...doc.data(),
+          docId: doc.id,
+          Followers: 22,
+          Following: 12,
+          
+          BG: "https://i.picsum.photos/id/1015/6000/4000.jpg?hmac=aHjb0fRa1t14DTIEBcoC12c5rAXOSwnVlaA5ujxPQ0I",
+        }))
       );
     };
     fetchDB();
-    
+    console.log(user);
   }, []);
 
   return (
@@ -145,6 +155,10 @@ const UserPage = () => {
         <div className="field">
           <label>Image URL</label>
           <input type="url" onChange={(e) => setPhoto(e.target.value)} />
+        </div>
+        <div className="field">
+          <label>BackGround URL</label>
+          <input type="url" onChange={(e) => setPhotoBg(e.target.value)} />
         </div>
 
         <div className="field">

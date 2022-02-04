@@ -102,8 +102,16 @@ const Feeds = () => {
     const fetchDB = async () => {
       const data = await getDocs(userCollectionRef);
 
-      setFollowers(data.docs.map((doc) => ({ ...doc.data(), docId: doc.id , Followers: 22 , Following: 12, Status: stat , BG :"https://i.picsum.photos/id/1015/6000/4000.jpg?hmac=aHjb0fRa1t14DTIEBcoC12c5rAXOSwnVlaA5ujxPQ0I" })));
-      
+      setFollowers(
+        data.docs.map((doc) => ({
+          ...doc.data(),
+          docId: doc.id,
+          Followers: 22,
+          Following: 12,
+          Status: stat,
+          
+        }))
+      );
     };
     fetchDB();
   }, []);
@@ -128,55 +136,37 @@ const Feeds = () => {
   }, [add, del]);
 
   return (
-    <div className="ui internally celled grid">
-      <div className="row">
-        <div className="two wide column">
-          <h2 className="ui header">
-            <img src={logo} className="ui circular image" />
-          </h2>
-          <div>{SideBarList()}</div>
-        </div>
-        <div className="eight wide column">
-          <div className="row">
-            <div className="ui header">Home</div>
-            <div className="item">
-              <img src={logo} className="ui avatar image tiny" />
-              <input
-                type="text"
-                placeholder="Whats Happening ?"
-                className="font-serif outline-0 my-1 w-96 "
-                onChange={(e) => setSummary(e.target.value)}
-              />
-            </div>
-            <div
-              className="ui button primary"
-              style={{ marginTop: "10px" }}
-              onClick={() => {
-                addToDb();
-                setAdd(false);
-              }}
-            >
-              tweet
-            </div>
-          </div>
-        </div>
-        <div className="four wide column">
-          <div className="flex flex-col w-96 h-96">
-            <div className="search">
-              <input
-                type="text"
-                className="rounded-full border-2 p-4 w-96 shadow-lg shadow-zinc-300 text-xl"
-                placeholder="Search "
-              />
-            </div>
-            <div className="container bg-black rounded-xl my-2 ">
-              <Follow followers={followers} ShowNew={setShowNewUser} user={user} Id={setId}/>
-            </div>
-          </div>
-        </div>
+    <div className="grid grid-cols-6  gap-5 grid-auto-rows">
+      <div className="col-start-2 col-end-3 p-4 h-fit  ">
+        <h2 className="ui header">
+          <img src={logo} className="ui circular image" />
+        </h2>
+        <div>{SideBarList()}</div>
       </div>
-      <div className="row">
-        <div className="ten wide column">
+      <div className="col-span-2 p-4 h-fit ">
+        <div className="row-span-1 border-b-2 m-2 p-2">
+          <div className="ui header">Home</div>
+          <div className="item">
+            <img src={logo} className="ui avatar image tiny" />
+            <input
+              type="text"
+              placeholder="Whats Happening ?"
+              className="font-serif outline-0 my-1 w-96 "
+              onChange={(e) => setSummary(e.target.value)}
+            />
+          </div>
+          <div
+            className="ui button primary"
+            style={{ marginTop: "10px" }}
+            onClick={() => {
+              addToDb();
+              setAdd(false);
+            }}
+          >
+            tweet
+          </div>
+        </div>
+        <div>
           {!showNewUser ? (
             <Tweets
               tweets={tweets}
@@ -187,6 +177,26 @@ const Feeds = () => {
           ) : (
             <NewUserPage toFollow={followers} thereTweets={tweets} id={id} />
           )}
+        </div>
+      </div>
+      <div className="col-span-2">
+        <div className="flex flex-col w-96 h-96">
+          <div className="search">
+            <input
+              type="text"
+              className="rounded-full border-2 p-4 w-96 shadow-lg shadow-zinc-300 text-xl"
+              placeholder="Search "
+            />
+          </div>
+          <div className="container bg-black rounded-xl my-2 ">
+            
+            <Follow
+              followers={followers}
+              ShowNew={setShowNewUser}
+              user={user}
+              Id={setId}
+            />
+          </div>
         </div>
       </div>
     </div>

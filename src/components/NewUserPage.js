@@ -9,7 +9,7 @@ const NewUserPage = ({ toFollow = [], thereTweets = [], id }) => {
           return (
             <div className="container p-1 flex flex-col">
               <div className="h-96 w-fit">
-                <img src={people.BG} className="h-96 bg-auto"/>
+                <img src={people.PhotoBG} className="h-96 bg-auto"/>
               </div>
               <div>
                 <p className="font-bold capitalize text-xl">{people.Name}</p>
