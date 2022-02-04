@@ -1,4 +1,4 @@
-import { React, useState, useEffect, Fragment } from "react";
+import { React, useState, useEffect } from "react";
 import logo from "../Icons/logo.png";
 import notify from "../Icons/notify.png";
 import homeLogo from "../Icons/home.jpg";
@@ -22,7 +22,7 @@ import Follow from "./Follow";
 
 const Feeds = () => {
   const user = auth.currentUser;
-
+  const stat = "hello this is my status";
   const [tweets, setTweets] = useState([]);
   const [time, setTime] = useState("");
   const [name, setName] = useState("");
@@ -35,7 +35,7 @@ const Feeds = () => {
   const tweetCollectionRef = collection(db, "tweets");
   const userCollectionRef = collection(db, "userDetails");
 
-  //create C
+  //create C Tweet
   const addToDb = async () => {
     try {
       await addDoc(tweetCollectionRef, {
@@ -52,7 +52,7 @@ const Feeds = () => {
     }
   };
 
-  // delete D
+  // delete D Tweet
   const deleteFeed = async (id) => {
     const tweetdoc = doc(db, "tweets", id);
     await deleteDoc(tweetdoc);
@@ -102,7 +102,8 @@ const Feeds = () => {
     const fetchDB = async () => {
       const data = await getDocs(userCollectionRef);
 
-      setFollowers(data.docs.map((doc) => ({ ...doc.data(), docId: doc.id })));
+      setFollowers(data.docs.map((doc) => ({ ...doc.data(), docId: doc.id , Followers: 22 , Following: 12, Status: stat , BG :"https://i.picsum.photos/id/1015/6000/4000.jpg?hmac=aHjb0fRa1t14DTIEBcoC12c5rAXOSwnVlaA5ujxPQ0I" })));
+      
     };
     fetchDB();
   }, []);
@@ -169,7 +170,7 @@ const Feeds = () => {
               />
             </div>
             <div className="container bg-black rounded-xl my-2 ">
-              <Follow followers={followers} showNew={setShowNewUser} user={user} Id={setId}/>
+              <Follow followers={followers} ShowNew={setShowNewUser} user={user} Id={setId}/>
             </div>
           </div>
         </div>
