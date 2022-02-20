@@ -13,6 +13,8 @@ import {
   addDoc,
   getDocs,
   deleteDoc,
+  serverTimestamp,
+  setDoc
 } from "firebase/firestore";
 
 import { toast } from "react-toastify";
@@ -24,7 +26,7 @@ const Feeds = () => {
   const user = auth.currentUser;
   const stat = "hello this is my status";
   const [tweets, setTweets] = useState([]);
-  const [time, setTime] = useState("");
+  const [time, setTime] = useState(Date.now);
   const [name, setName] = useState("");
   const [id, setId] = useState("");
   const [followers, setFollowers] = useState([]);
@@ -32,12 +34,19 @@ const Feeds = () => {
   const [add, setAdd] = useState(false);
   const [del, setDel] = useState(false);
   const [showNewUser, setShowNewUser] = useState(false);
-  const tweetCollectionRef = collection(db, "tweets");
+  const tweetCollectionRef = collection(db, "tweets", user.uid, "userPosts");
   const userCollectionRef = collection(db, "userDetails");
-
+  const userFollowingRef = collection(
+    db,
+    "following",
+    user.uid,
+    "userFollowing"
+  );
   //create C Tweet
   const addToDb = async () => {
-    try {
+
+      await setDoc(doc(db,"tweets",user.uid),{});
+
       await addDoc(tweetCollectionRef, {
         Name: name,
         Summary: summary,
@@ -45,11 +54,9 @@ const Feeds = () => {
         Date: time,
       });
       setAdd(true);
-      setTime(new Date().toLocaleString());
+      console.log(serverTimestamp())
       toast.success("done");
-    } catch (err) {
-      console.log(err);
-    }
+   
   };
 
   // delete D Tweet
@@ -102,18 +109,22 @@ const Feeds = () => {
     const fetchDB = async () => {
       const data = await getDocs(userCollectionRef);
 
+      const snaps = await getDocs(userFollowingRef);
+      
+  
+
       setFollowers(
         data.docs.map((doc) => ({
           ...doc.data(),
           docId: doc.id,
           Followers: 22,
-          Following: 12,
+          Following: snaps.size,
           Status: stat,
-          
         }))
       );
     };
     fetchDB();
+    
   }, []);
 
   useEffect(() => {
@@ -175,7 +186,12 @@ const Feeds = () => {
               deleteFeed={deleteFeed}
             />
           ) : (
-            <NewUserPage toFollow={followers} thereTweets={tweets} id={id} />
+            <NewUserPage
+              toFollow={followers}
+              thereTweets={tweets}
+              id={id}
+              showNew={setShowNewUser}
+            />
           )}
         </div>
       </div>
@@ -189,7 +205,6 @@ const Feeds = () => {
             />
           </div>
           <div className="container bg-black rounded-xl my-2 ">
-            
             <Follow
               followers={followers}
               ShowNew={setShowNewUser}

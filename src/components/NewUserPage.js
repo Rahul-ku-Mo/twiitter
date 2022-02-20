@@ -1,13 +1,16 @@
 import { React, useState } from "react";
 import { BiDislike, BiLike } from "react-icons/bi";
 import logo from "../Icons/logo.png";
-const NewUserPage = ({ toFollow = [], thereTweets = [], id }) => {
+const NewUserPage = ({ toFollow = [], thereTweets = [], id , showNew}) => {
   return (
     <>
       {toFollow.map((people) => {
         if (people.UserId === id) {
           return (
             <div className="container p-1 flex flex-col">
+              <div onClick={() => {
+                showNew(false);
+              }}>Back</div>
               <div className="h-96 w-fit">
                 <img src={people.PhotoBG} className="h-96 bg-auto"/>
               </div>

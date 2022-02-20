@@ -7,6 +7,7 @@ import {
   addDoc,
   getDocs,
   updateDoc,
+  setDoc,
 } from "firebase/firestore";
 
 import { updateProfile, signOut, updatePassword, getAuth } from "firebase/auth";
@@ -131,13 +132,20 @@ const UserPage = () => {
           docId: doc.id,
           Followers: 22,
           Following: 12,
-          
           BG: "https://i.picsum.photos/id/1015/6000/4000.jpg?hmac=aHjb0fRa1t14DTIEBcoC12c5rAXOSwnVlaA5ujxPQ0I",
         }))
       );
     };
+
+
+    const createCollection = async () =>{
+      await setDoc(doc(db,"following",user.uid), {})
+      console.log("happening")
+    }
     fetchDB();
-    console.log(user);
+    createCollection();
+    
+
   }, []);
 
   return (
