@@ -35,6 +35,7 @@ const Tweets = ({ tweets, setDel, user, deleteFeed }) => {
                   />
                 </ul>
               </div>
+             
             </li>
           </div>
         </>

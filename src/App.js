@@ -7,11 +7,7 @@ import UserLogin from "./components/UserLogin";
 import UserRegister from "./components/UserRegister";
 import Feeds from "./components/Home";
 
-
 const App = () => {
-
-
-  
   return (
     <div>
       <Router>
@@ -19,7 +15,7 @@ const App = () => {
         <Route path="/userPage" exact component={UserPage} />
         <Route path="/userLogin" exact component={UserLogin} />
         <Route path="/feeds" exact component={Feeds} />
-      
+
         <ToastContainer />
       </Router>
     </div>

@@ -14,8 +14,9 @@ import {
   getDocs,
   deleteDoc,
   serverTimestamp,
-  setDoc
+  setDoc,
 } from "firebase/firestore";
+import { formatDistance, subDays } from 'date-fns';
 
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
@@ -26,7 +27,7 @@ const Feeds = () => {
   const user = auth.currentUser;
   const stat = "hello this is my status";
   const [tweets, setTweets] = useState([]);
-  const [time, setTime] = useState(Date.now);
+  const [time, setTime] = useState(new Date().toTimeString());
   const [name, setName] = useState("");
   const [id, setId] = useState("");
   const [followers, setFollowers] = useState([]);
@@ -34,29 +35,22 @@ const Feeds = () => {
   const [add, setAdd] = useState(false);
   const [del, setDel] = useState(false);
   const [showNewUser, setShowNewUser] = useState(false);
-  const tweetCollectionRef = collection(db, "tweets", user.uid, "userPosts");
+  const tweetCollectionRef = collection(db, "tweets");
   const userCollectionRef = collection(db, "userDetails");
-  const userFollowingRef = collection(
-    db,
-    "following",
-    user.uid,
-    "userFollowing"
-  );
+
+ 
   //create C Tweet
   const addToDb = async () => {
+    setTime(new Date().toTimeString())
+    await addDoc(tweetCollectionRef, {
+      Name: name,
+      Summary: summary,
+      UserId: user.uid,
+      Date: time,
+    });
+    setAdd(true);
 
-      await setDoc(doc(db,"tweets",user.uid),{});
-
-      await addDoc(tweetCollectionRef, {
-        Name: name,
-        Summary: summary,
-        UserId: user.uid,
-        Date: time,
-      });
-      setAdd(true);
-      console.log(serverTimestamp())
-      toast.success("done");
-   
+    toast.success("done");
   };
 
   // delete D Tweet
@@ -109,22 +103,19 @@ const Feeds = () => {
     const fetchDB = async () => {
       const data = await getDocs(userCollectionRef);
 
-      const snaps = await getDocs(userFollowingRef);
-      
-  
-
       setFollowers(
         data.docs.map((doc) => ({
           ...doc.data(),
           docId: doc.id,
           Followers: 22,
-          Following: snaps.size,
+          Following: 2,
           Status: stat,
         }))
       );
+
+      console.log("hi")
     };
     fetchDB();
-    
   }, []);
 
   useEffect(() => {
@@ -136,7 +127,7 @@ const Feeds = () => {
         console.log("not logged in");
       }
     });
-
+    //need to pop from the array
     const fetchFromDB = async () => {
       const data = await getDocs(tweetCollectionRef);
       setTweets(
@@ -144,6 +135,7 @@ const Feeds = () => {
       );
     };
     fetchFromDB();
+    console.log(tweets);
   }, [add, del]);
 
   return (
@@ -170,8 +162,10 @@ const Feeds = () => {
             className="ui button primary"
             style={{ marginTop: "10px" }}
             onClick={() => {
+
               addToDb();
               setAdd(false);
+            
             }}
           >
             tweet
@@ -190,6 +184,7 @@ const Feeds = () => {
               toFollow={followers}
               thereTweets={tweets}
               id={id}
+              user={user}
               showNew={setShowNewUser}
             />
           )}

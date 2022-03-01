@@ -139,7 +139,9 @@ const UserPage = () => {
 
 
     const createCollection = async () =>{
+     
       await setDoc(doc(db,"following",user.uid), {})
+      
       console.log("happening")
     }
     fetchDB();

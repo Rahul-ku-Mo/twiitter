@@ -10,9 +10,9 @@ import {
   addDoc,
   getDocs,
   snapshotEqual,
+  collectionGroup,
 } from "firebase/firestore";
 import { db } from "../Firebase";
-
 
 const Follow = ({ followers = [], ShowNew, user, Id }) => {
   const [followlist, setFollowList] = useState([]);
@@ -39,8 +39,6 @@ const Follow = ({ followers = [], ShowNew, user, Id }) => {
     };
     find();
     console.log(followlist);
- 
-    
   }, []);
 
   return (
@@ -83,7 +81,7 @@ const Follow = ({ followers = [], ShowNew, user, Id }) => {
                     //we need to choose one user using array method and also in that user we need to push our id in his follolist so that we can access from the aboive image click
                   }}
                 >
-                  {idPresent(toFollow.UserId,followlist)
+                  {idPresent(toFollow.UserId, followlist)
                     ? "following"
                     : "follow"}
                 </div>
