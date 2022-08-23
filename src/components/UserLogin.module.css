@@ -1,0 +1,23 @@
+.btn,.my_image  {
+    transition: all 300ms ease-in-out;
+}
+
+.btn:hover{
+    background-color:#051367;
+    color: #DFF6FF;
+}
+
+.link{
+    transition: all 300ms ease-in-out;
+}
+
+.link:hover{
+    color: #000000;
+    font-weight: 400;
+    text-decoration: underline;
+}
+
+.my_image:hover {
+    transform: scale(0.9);
+  }
+  
