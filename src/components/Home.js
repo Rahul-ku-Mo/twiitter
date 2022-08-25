@@ -1,5 +1,7 @@
 import { React, useState, useEffect } from "react";
+import { Fade } from "react-awesome-reveal";
 import logo from "../Icons/logo.png";
+
 import notify from "../Icons/notify.png";
 import homeLogo from "../Icons/home.jpg";
 import homeMsg from "../Icons/msg.jpg";
@@ -13,10 +15,8 @@ import {
   addDoc,
   getDocs,
   deleteDoc,
-  serverTimestamp,
-  setDoc,
+
 } from "firebase/firestore";
-import { formatDistance, subDays } from 'date-fns';
 
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
@@ -24,10 +24,24 @@ import NewUserPage from "./NewUserPage";
 import Follow from "./Follow";
 
 const Feeds = () => {
+  const timeFormatting = (x) =>
+    new Date(x * 1000).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+
+  const dayFormatting = (x) =>
+    new Date(x * 1000).toLocaleDateString([], {
+      weekday: "long",
+    });
+
   const user = auth.currentUser;
   const stat = "hello this is my status";
   const [tweets, setTweets] = useState([]);
-  const [time, setTime] = useState(new Date().toTimeString());
+  const [time, setTime] = useState(
+    ` ${dayFormatting(new Date())}, ${timeFormatting(new Date())} `
+  );
   const [name, setName] = useState("");
   const [id, setId] = useState("");
   const [followers, setFollowers] = useState([]);
@@ -38,10 +52,9 @@ const Feeds = () => {
   const tweetCollectionRef = collection(db, "tweets");
   const userCollectionRef = collection(db, "userDetails");
 
- 
   //create C Tweet
   const addToDb = async () => {
-    setTime(new Date().toTimeString())
+    setTime(` ${dayFormatting(new Date())}, ${timeFormatting(new Date())} `);
     await addDoc(tweetCollectionRef, {
       Name: name,
       Summary: summary,
@@ -59,12 +72,15 @@ const Feeds = () => {
     await deleteDoc(tweetdoc);
     setDel(true);
   };
+
+
+
   //side bar btns
   const SideBarList = () => {
     return (
       <div className="ui middle aligned selection list">
         <div className="item">
-          <img className="ui avatar image" src={homeLogo} />
+          <img className="ui avatar image" src={homeLogo} alt="" />
           <div className="content">
             <div className="content">
               <div className="header"> Home </div>
@@ -72,7 +88,7 @@ const Feeds = () => {
           </div>
         </div>
         <div className="item">
-          <img className="ui avatar image" src={notify} />
+          <img className="ui avatar image" src={notify} alt="" />
           <div className="content">
             <div className="content">
               <div className="header"> Explore </div>
@@ -80,7 +96,7 @@ const Feeds = () => {
           </div>
         </div>
         <div className="item">
-          <img className="ui avatar image" src={homeMsg} />
+          <img className="ui avatar image" src={homeMsg} alt="" />
           <div className="content">
             <div className="content">
               <div className="header"> Messages </div>
@@ -88,7 +104,7 @@ const Feeds = () => {
           </div>
         </div>
         <Link to="/userPage" className="item">
-          <img className="ui avatar image" src={homeProfile} />
+          <img className="ui avatar image" src={homeProfile} alt="" />
           <div className="content">
             <div className="content">
               <div className="header"> Profile </div>
@@ -113,9 +129,10 @@ const Feeds = () => {
         }))
       );
 
-      console.log("hi")
+      
     };
     fetchDB();
+    console.log(followers);
   }, []);
 
   useEffect(() => {
@@ -142,7 +159,7 @@ const Feeds = () => {
     <div className="grid grid-cols-6  gap-5 grid-auto-rows">
       <div className="col-start-2 col-end-3 p-4 h-fit  ">
         <h2 className="ui header">
-          <img src={logo} className="ui circular image" />
+          <img src={logo} alt="" className="ui circular image" />
         </h2>
         <div>{SideBarList()}</div>
       </div>
@@ -150,30 +167,30 @@ const Feeds = () => {
         <div className="row-span-1 border-b-2 m-2 p-2">
           <div className="ui header">Home</div>
           <div className="item">
-            <img src={logo} className="ui avatar image tiny" />
+            <img src={logo} alt="" className="ui avatar image tiny" />
             <input
               type="text"
-              placeholder="Whats Happening ?"
-              className="font-serif outline-0 my-1 w-96 "
+              placeholder="Something Special Today...😊"
+              className="outline-0 my-1 w-96 "
               onChange={(e) => setSummary(e.target.value)}
             />
           </div>
           <div
-            className="ui button primary"
+            className="user-btn bg-slate-400 text-slate-100"
             style={{ marginTop: "10px" }}
             onClick={() => {
-
               addToDb();
               setAdd(false);
-            
             }}
           >
             tweet
           </div>
         </div>
-        <div>
+        <Fade cascade damping={1}>
           {!showNewUser ? (
             <Tweets
+              delay={1000} 
+              toFollow={followers}
               tweets={tweets}
               setDel={setDel}
               user={user}
@@ -188,7 +205,7 @@ const Feeds = () => {
               showNew={setShowNewUser}
             />
           )}
-        </div>
+        </Fade >
       </div>
       <div className="col-span-2">
         <div className="flex flex-col w-96 h-96">
@@ -199,7 +216,7 @@ const Feeds = () => {
               placeholder="Search "
             />
           </div>
-          <div className="container bg-black rounded-xl my-2 ">
+          <div className="container my-2 ">
             <Follow
               followers={followers}
               ShowNew={setShowNewUser}

@@ -5,14 +5,14 @@ import { BiDislike, BiLike } from "react-icons/bi";
 import logo from "../Icons/logo.png";
 import ReplyForm from "./ReplyForm";
 
-import { db, auth } from "../Firebase";
+import { db } from "../Firebase";
 import {
   doc,
   collection,
-  addDoc,
+ 
   getDocs,
   updateDoc,
-  setDoc,
+ 
 } from "firebase/firestore";
 
 const NewUserPage = ({

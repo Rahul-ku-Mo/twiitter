@@ -1,0 +1,49 @@
+* {
+  font-family: "Poppins", sans-serif;
+}
+.user-container {
+  display: flex;
+  justify-content: center;
+}
+
+.user-left {
+  display: flex;
+  flex-direction: column;
+}
+.user-profile {
+  display: flex;
+  flex-direction: column;
+}
+.user-profile img {
+  width: 10rem;
+  height: 10rem;
+
+  background-size: contain;
+}
+
+.user-buttons {
+  display: flex;
+  gap: 2rem;
+}
+
+.user-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 9px 18px;
+  border-radius: 1rem;
+  width: fit-content;
+  font-size: 1.125rem /* 18px */;
+  line-height: 1.75rem /* 28px */;
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: all 250ms ease-in-out;
+}
+
+.user-btn:hover {
+  transform: scale(1.04);
+}
+.user-profile .user-btn:hover {
+  text-decoration: none !important;
+  color: white !important;
+}

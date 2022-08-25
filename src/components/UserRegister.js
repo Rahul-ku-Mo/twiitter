@@ -3,7 +3,7 @@ import { Container, Box, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "../Firebase";
+import { auth } from "../Firebase";
 import signImg from "../Icons/signup-image.jpg";
 import style from "./UserRegister.module.css"
 const UserRegister = () => {

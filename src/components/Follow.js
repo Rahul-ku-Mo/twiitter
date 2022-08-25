@@ -1,17 +1,7 @@
 import { React, useState, useLayoutEffect } from "react";
 import logo from "../Icons/logo.png";
-import {
-  collection,
-  doc,
-  query,
-  updateDoc,
-  where,
-  setDoc,
-  addDoc,
-  getDocs,
-  snapshotEqual,
-  collectionGroup,
-} from "firebase/firestore";
+import { Bounce } from "react-awesome-reveal";
+import { collection, doc, setDoc, getDocs } from "firebase/firestore";
 import { db } from "../Firebase";
 
 const Follow = ({ followers = [], ShowNew, user, Id }) => {
@@ -39,21 +29,21 @@ const Follow = ({ followers = [], ShowNew, user, Id }) => {
     };
     find();
     console.log(followlist);
+    console.log(followers)
   }, []);
 
   return (
     <>
-      {/* <div className="text-slate-200 font-serif mx-4 text-xl my-3 font-extrabold">
-        Who to follow
-      </div> */}
       <div className="flex flex-col">
         {followers.map((toFollow) => {
           if (toFollow.UserId !== user.uid) {
             return (
-              <div key={toFollow.UserId} className="flex">
+            <Bounce  triggerOnce>
+                <div key={toFollow.UserId} className="flex m-2 bg-black rounded-xl">
                 <img
-                  src={logo}
-                  className="w-24 hover:scale-110 cursor-pointer"
+                  src={toFollow.Photo}
+                  alt="my-bg"
+                  className="w-24 cursor-pointer rounded-l-xl"
                   onClick={() => {
                     if (idPresent(toFollow.UserId, followlist)) {
                       ShowNew(true);
@@ -64,15 +54,15 @@ const Follow = ({ followers = [], ShowNew, user, Id }) => {
                   }}
                 />
                 <div className="container flex flex-col justify-center">
-                  <div className="text-md text-slate-500 mx-4">
+                  <div className="text-xl text-zinc-100 mx-4">
                     {toFollow.Name}
                   </div>
-                  <div className="text-sm text-slate-100 mx-4 lowercase">
+                  <div className="text-sm text-zinc-400 mx-4 lowercase">
                     @{toFollow.Name}
                   </div>
                 </div>
                 <div
-                  className="bg-sky-500 rounded-3xl px-3 py-2  font-bold text-slate-100 float-right h-fit self-center m-4 cursor-pointer transition duration-300 ease-in-out hover:scale-110 "
+                  className="bg-blue-400 user-btn font-bold text-slate-100 float-right h-fit self-center m-4 cursor-pointer transition duration-300 ease-in-out hover:scale-110 "
                   onClick={() => {
                     add(toFollow.UserId);
 
@@ -86,6 +76,7 @@ const Follow = ({ followers = [], ShowNew, user, Id }) => {
                     : "follow"}
                 </div>
               </div>
+            </Bounce>
             );
           }
         })}
