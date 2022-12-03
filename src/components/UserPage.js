@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from "react";
 import logo from "../Icons/logo.png";
 import "./UersPage.css";
-import { db, auth } from "../Firebase";
+import { db, auth, storage } from "../Firebase";
 import {
   doc,
   collection,
@@ -10,12 +10,15 @@ import {
   updateDoc,
 } from "firebase/firestore";
 
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { updateProfile, signOut, updatePassword } from "firebase/auth";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import avatarImg from "../assets/images/upload.png";
 
 const UserPage = () => {
   const user = auth.currentUser;
+
   const userCollectionRef = collection(db, "userDetails");
 
   const [personalData, setPersonalData] = useState([]);
@@ -25,6 +28,7 @@ const UserPage = () => {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [id, setId] = useState("");
+  const [file, setFile] = useState("");
   const [photo, setPhoto] = useState(logo);
   const [bio, setBio] = useState("Tell me about yourself....");
 
@@ -41,6 +45,51 @@ const UserPage = () => {
     }
   };
 
+  const handleUpdateSubmit = async (id) => {
+    try {
+      const storageRef = ref(storage, name);
+
+      await uploadBytesResumable(storageRef, file).then(() => {
+        getDownloadURL(storageRef).then((downloadURL) => {
+          setPhoto(downloadURL);
+          console.log(downloadURL);
+        });
+      });
+
+      await updateDoc(doc(db, "userDetails", id), {
+        Name: name,
+        Phone: phone,
+        Photo: photo,
+        Bio: bio,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleAddSubmit = async () => {
+    try {
+      const storageRef = ref(storage, name);
+
+      await uploadBytesResumable(storageRef, file).then(() => {
+        getDownloadURL(storageRef).then((downloadURL) => {
+          setPhoto(downloadURL);
+          console.log(downloadURL);
+        });
+      });
+
+      await addDoc(userCollectionRef, {
+        Name: name,
+        Phone: phone,
+        UserId: user.uid,
+        Photo: photo,
+        PhotoBG: photoBg,
+        Bio: bio,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
   //reset Password
   const resetPassword = () => {
     return (
@@ -73,9 +122,9 @@ const UserPage = () => {
 
   //Updating Profile in auth
   const updateDetails = () => {
-    personalData.forEach((profile) => {
+    personalData.forEach(async (profile) => {
       if (user.uid === profile.UserId) {
-        updateProfile(user, {
+        await updateProfile(user, {
           displayName: profile.Name,
           photoURL: profile.Photo,
           phone: profile.Phone,
@@ -96,35 +145,9 @@ const UserPage = () => {
     personalData.forEach((prof) => {
       if (prof.UserId === user.uid) return setId(prof.docId);
     });
-
-    return id;
   };
 
   //add to fireStore database
-  const addToDb = async () => {
-    try {
-      await addDoc(userCollectionRef, {
-        Name: name,
-        Phone: phone,
-        UserId: user.uid,
-        Photo: photo,
-        PhotoBG: photoBg,
-        Bio: bio,
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  //update firestore Database
-  const updateDatabase = async (id) => {
-    const userDoc = doc(db, "userDetails", id);
-    await updateDoc(userDoc, {
-      Name: name,
-      Phone: phone,
-      Bio: bio,
-    });
-  };
 
   useEffect(() => {
     //fetch firestore database
@@ -149,6 +172,7 @@ const UserPage = () => {
     // };
 
     fetchDB();
+    searchId();
     // createCollection();
   }, []);
 
@@ -168,7 +192,7 @@ const UserPage = () => {
             margin: "30px 0px",
             boxShadow: "0px 4.00498px 50.0622px rgba(79, 67, 67, 0.15)",
             fontSize: "14px",
-            padding: "21px 14px",
+            padding: "10px 14px",
           }}
           onChange={(e) => setName(e.target.value)}
         />
@@ -181,7 +205,7 @@ const UserPage = () => {
             margin: "0px 0px 30px 0px",
             boxShadow: "0px 4.00498px 50.0622px rgba(79, 67, 67, 0.15)",
             fontSize: "14px",
-            padding: "21px 14px",
+            padding: "10px 14px",
           }}
           onChange={(e) => setBio(e.target.value)}
         />
@@ -196,24 +220,29 @@ const UserPage = () => {
             fontFamily: "'Poppins', sans-serif",
             boxShadow: "0px 4.00498px 50.0622px rgba(79, 67, 67, 0.15)",
             fontSize: "14px",
-            padding: "21px 14px",
+            padding: "10px 14px",
           }}
           onChange={(e) => setPhone(e.target.value)}
         />
         <input
-          placeholder="Image Url"
-          autoComplete="off"
-          style={{
-            height: "46px",
-            width: "295px",
-            fontFamily: "'Poppins', sans-serif",
-            marginBottom: "30px",
-            boxShadow: "0px 4.00498px 50.0622px rgba(79, 67, 67, 0.15)",
-            fontSize: "14px",
-            padding: "21px 14px",
+          required
+          style={{ display: "none" }}
+          type="file"
+          id="file"
+          onChange={(e) => {
+            setFile(e.target.files[0]);
           }}
-          onChange={(e) => setPhoto(e.target.value)}
         />
+        <label
+          htmlFor="file"
+          style={{ display: "flex", alignItems: "center", gap: "10px" }}
+        >
+          <img style={{ width: "50px" }} src={avatarImg} alt="" />
+          <span className="cursor-pointer text-blue-800 font-semibold">
+            Add an avatar
+          </span>
+        </label>
+
         <input
           placeholder="Background Url"
           autoComplete="off"
@@ -224,7 +253,7 @@ const UserPage = () => {
             marginBottom: "30px",
             boxShadow: "0px 4.00498px 50.0622px rgba(79, 67, 67, 0.15)",
             fontSize: "14px",
-            padding: "21px 14px",
+            padding: "10px 14px",
           }}
           onChange={(e) => setPhotoBg(e.target.value)}
         />
@@ -233,8 +262,9 @@ const UserPage = () => {
           <div
             className=" bg-blue-800 text-slate-100 user-btn"
             onClick={() => {
+              handleAddSubmit();
               updateDetails();
-              addToDb();
+
               setShow(true);
             }}
           >
@@ -243,8 +273,8 @@ const UserPage = () => {
           <div
             className=" bg-blue-500 text-slate-100 user-btn"
             onClick={() => {
+              handleUpdateSubmit(id);
               updateDetails();
-              updateDatabase(searchId);
             }}
           >
             Update
@@ -290,8 +320,11 @@ const UserPage = () => {
                     id={profile.Userid}
                   >
                     {profile.Bio}
-                  </p>  
-                  <Link to="/Feeds" className="user-btn text-slate-100 bg-zinc-500  ">
+                  </p>
+                  <Link
+                    to="/Feeds"
+                    className="user-btn text-slate-100 bg-zinc-500  "
+                  >
                     Go to Home
                   </Link>
                 </div>

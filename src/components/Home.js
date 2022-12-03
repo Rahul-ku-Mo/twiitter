@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from "react";
-import { Fade } from "react-awesome-reveal";
+
 import logo from "../Icons/logo.png";
 
 import notify from "../Icons/notify.png";
@@ -15,33 +15,17 @@ import {
   addDoc,
   getDocs,
   deleteDoc,
-
 } from "firebase/firestore";
 
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 import NewUserPage from "./NewUserPage";
-import Follow from "./Follow";
+import UserList from "./Followers/UserList";
 
 const Feeds = () => {
-  const timeFormatting = (x) =>
-    new Date(x * 1000).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-
-  const dayFormatting = (x) =>
-    new Date(x * 1000).toLocaleDateString([], {
-      weekday: "long",
-    });
-
   const user = auth.currentUser;
-  const stat = "hello this is my status";
+
   const [tweets, setTweets] = useState([]);
-  const [time, setTime] = useState(
-    ` ${dayFormatting(new Date())}, ${timeFormatting(new Date())} `
-  );
   const [name, setName] = useState("");
   const [id, setId] = useState("");
   const [followers, setFollowers] = useState([]);
@@ -50,16 +34,21 @@ const Feeds = () => {
   const [del, setDel] = useState(false);
   const [showNewUser, setShowNewUser] = useState(false);
   const tweetCollectionRef = collection(db, "tweets");
-  const userCollectionRef = collection(db, "userDetails");
 
+  const userCollectionRef = collection(db, "userDetails");
+  const userFollowerRef = collection(
+    db,
+    "userDetails",
+    "0J9rH0wucUyWc3fEkzXx",
+    "Followers"
+  );
   //create C Tweet
   const addToDb = async () => {
-    setTime(` ${dayFormatting(new Date())}, ${timeFormatting(new Date())} `);
     await addDoc(tweetCollectionRef, {
       Name: name,
       Summary: summary,
       UserId: user.uid,
-      Date: time,
+      Date: new Date().toString().slice(0, 10),
     });
     setAdd(true);
 
@@ -72,8 +61,6 @@ const Feeds = () => {
     await deleteDoc(tweetdoc);
     setDel(true);
   };
-
-
 
   //side bar btns
   const SideBarList = () => {
@@ -123,27 +110,22 @@ const Feeds = () => {
         data.docs.map((doc) => ({
           ...doc.data(),
           docId: doc.id,
-          Followers: 22,
-          Following: 2,
-          Status: stat,
         }))
       );
-
-      
     };
+
     fetchDB();
-    console.log(followers);
   }, []);
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         setName(user.displayName);
-        console.log(tweets);
       } else {
         console.log("not logged in");
       }
     });
+
     //need to pop from the array
     const fetchFromDB = async () => {
       const data = await getDocs(tweetCollectionRef);
@@ -186,45 +168,34 @@ const Feeds = () => {
             tweet
           </div>
         </div>
-        <Fade cascade damping={1}>
-          {!showNewUser ? (
-            <Tweets
-              delay={1000} 
-              toFollow={followers}
-              tweets={tweets}
-              setDel={setDel}
-              user={user}
-              deleteFeed={deleteFeed}
-            />
-          ) : (
-            <NewUserPage
-              toFollow={followers}
-              thereTweets={tweets}
-              id={id}
-              user={user}
-              showNew={setShowNewUser}
-            />
-          )}
-        </Fade >
+
+        {!showNewUser ? (
+          <Tweets
+            toFollow={followers}
+            tweets={tweets}
+            setDel={setDel}
+            user={user}
+            deleteFeed={deleteFeed}
+          />
+        ) : (
+          <NewUserPage
+            toFollow={followers}
+            thereTweets={tweets}
+            id={id}
+            user={user}
+            showNew={setShowNewUser}
+          />
+        )}
       </div>
       <div className="col-span-2">
-        <div className="flex flex-col w-96 h-96">
-          <div className="search">
-            <input
-              type="text"
-              className="rounded-full border-2 p-4 w-96 shadow-lg shadow-zinc-300 text-xl"
-              placeholder="Search "
-            />
-          </div>
-          <div className="container my-2 ">
-            <Follow
-              followers={followers}
-              ShowNew={setShowNewUser}
-              user={user}
-              Id={setId}
-            />
-          </div>
+        <div className="flex flex-col my-2">
+          <input
+            type="text"
+            className="rounded-lg border-1 p-4 w-[250px] shadow-lg shadow-zinc-300 text-lg"
+            placeholder="Search "
+          />
         </div>
+        <UserList userList={followers} user_id={user.uid} showNew={setShowNewUser} />
       </div>
     </div>
   );

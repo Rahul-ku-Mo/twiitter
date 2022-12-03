@@ -104,7 +104,7 @@ const UserRegister = () => {
         </Typography>
       </Box>
       <Box sx={{ display: "flex", flexDirection: "column" }}>
-        <img src={signImg} style={{ height: "359", width: "332" }} />
+        <img src={signImg} alt="heh" style={{ height: "359", width: "332" }} />
         <Link
           to="/userLogin"
           style={{

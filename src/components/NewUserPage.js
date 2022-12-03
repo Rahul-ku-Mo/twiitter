@@ -9,7 +9,6 @@ import { db } from "../Firebase";
 import {
   doc,
   collection,
- 
   getDocs,
   updateDoc,
  
@@ -22,6 +21,9 @@ const NewUserPage = ({
   showNew,
   user,
 }) => {
+
+
+  console.log(toFollow)
   const [reply, setReply] = useState("");
   const [currentReply, setCurrentReply] = useState("");
   const [rend, setRend] = useState(false);
@@ -66,7 +68,7 @@ const NewUserPage = ({
                 Back
               </div>
               <div className="h-96 w-fit">
-                <img src={people.PhotoBG} className="h-96 bg-auto" />
+                <img src={people.PhotoBG} alt="bg" className="h-96 bg-auto" />
               </div>
               <div>
                 <p className="font-bold capitalize text-xl">{people.Name}</p>
