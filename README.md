@@ -1,3 +1,9 @@
+# This site is hosted in netlify : https://earnest-paletas-ff9360.netlify.app/
+
+# For login use: 
+   Email:    Rahul123@gmail.com
+   password: 123456789;
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
